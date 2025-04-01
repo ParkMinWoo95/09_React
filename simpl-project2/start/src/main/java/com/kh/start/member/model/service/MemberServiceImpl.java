@@ -3,6 +3,7 @@ package com.kh.start.member.model.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.kh.start.exception.MemberIdDuplicateException;
 import com.kh.start.member.model.dao.MemberMapper;
 import com.kh.start.member.model.dto.MemberDTO;
 import com.kh.start.member.model.vo.Member;
@@ -23,7 +24,7 @@ public class MemberServiceImpl implements MemberService{
 		MemberDTO searchedMember = mapper.getMemberByMemberId(member.getMemberId());
 		
 		if(searchedMember != null) {
-			throw new RuntimeException("이미 존재하는 이이디에요");
+			throw new MemberIdDuplicateException("이미 존재하는 이이디에요");
 		}
 		
 		// 할 일 두개

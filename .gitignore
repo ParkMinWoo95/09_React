@@ -32,3 +32,4 @@ tmp/
 # 압축파일들
 
 root-context.xml
+application-private.yml
