@@ -9,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.kh.start.auth.model.vo.CustomUserDetails;
 import com.kh.start.auth.util.JwtUtil;
 import com.kh.start.exception.CustomAuthenticationException;
 import com.kh.start.member.model.dto.MemberDTO;
@@ -44,7 +45,7 @@ public class AuthServiceImpl implements AuthService{
 		} catch(AuthenticationException e) {
 			throw new CustomAuthenticationException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
 		}
-		UserDetails user = (UserDetails)authentication.getPrincipal();
+		CustomUserDetails user = (CustomUserDetails)authentication.getPrincipal();
 		
 		log.info("로그인 성공");
 		log.info("인증에 성공한 사용자의 정보 : {}", user);
@@ -58,7 +59,8 @@ public class AuthServiceImpl implements AuthService{
 		// String accessToken = jwtUtil.getAccessToken(user.getUsername());
 		// String refreshToken = jwtUtil.getRefreshToken(user.getUsername());
 		// log.info("accessToken값 : {} \n refreshToken값 : {}", accessToken, refreshToken);
-		Map<String, String> loginResponse = tokenService.generateToken(user.getUsername());
+		Map<String, String> loginResponse = tokenService.generateToken(user.getUsername(),
+																	   user.getMemberNo());
 		
 		loginResponse.put("memeberId", user.getUsername());
 		loginResponse.put("memeberName", user.getMemberName());
