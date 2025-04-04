@@ -1,4 +1,4 @@
-package com.kh.start.board.model.dto;
+package com.kh.start.comments.model.dto;
 
 import java.sql.Date;
 
@@ -13,15 +13,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class BoardDTO {
+public class CommentDTO {
 	
-	private Long boardNo;
-	private String boardTitle;
-	private String boardContent;
-	private String boardWriter;
-	private String boardFileUrl;
-	private String status;
+	private Long commentNo;
+	private String commentContent;
+	private String commentWriter;
 	private Date createDate;
-	private Date modifyDate;
-	
+	private Long refBoardNo;
 }

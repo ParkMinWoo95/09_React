@@ -39,9 +39,10 @@ public class JwtFilter extends OncePerRequestFilter {
 		
 		String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 		
-		// log.info("이게 진짜로 넘어옴? : {}", authorization);
+		log.info("이게 진짜로 넘어옴? : {}", authorization);
 		
-		if(authorization == null || authorization.startsWith("Bearer ")) {
+		if(authorization == null || !authorization.startsWith("Bearer ")) {
+			// log.info("여기서나가리네?");
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -70,19 +71,19 @@ public class JwtFilter extends OncePerRequestFilter {
 			// session.setAttribute("loginMember", 사용자정보);
 			
 		} catch(ExpiredJwtException e) {
-			// log.info("만료됨");
+			 log.info("만료됨");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().write("만료된 토큰입니다.");
 			
 			
 			return;
 		} catch(JwtException e) {
-			// log.info("유효하지 않은 토큰값");
+			 log.info("유효하지 않은 토큰값");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().write("유효하지 않은 토큰입니다.");
 			return;
 		}
-		
+		// log.info("???");
 		filterChain.doFilter(request, response);
 		
 	}

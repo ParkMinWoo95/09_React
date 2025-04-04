@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -62,10 +63,20 @@ public class AuthServiceImpl implements AuthService{
 		Map<String, String> loginResponse = tokenService.generateToken(user.getUsername(),
 																	   user.getMemberNo());
 		
-		loginResponse.put("memeberId", user.getUsername());
-		loginResponse.put("memeberName", user.getMemberName());
+		loginResponse.put("memberId", user.getUsername());
+		loginResponse.put("memberName", user.getMemberName());
+		loginResponse.put("memberNo", String.valueOf(user.getMemberNo()));
 		
 		return loginResponse;
+	}
+
+	@Override
+	public CustomUserDetails getUserDetails() {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		
+		return user;
 	}
 	
 	

@@ -1,9 +1,12 @@
 package com.kh.start.configuration;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.kh.start.configuration.filter.JwtFilter;
 
@@ -49,11 +55,14 @@ public class SecurityConfigure {
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
 						   .httpBasic(AbstractHttpConfigurer::disable)
 						   .csrf(AbstractHttpConfigurer::disable)
+						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
 							   requests.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh", "/members").permitAll();
 							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
-							   requests.requestMatchers(HttpMethod.PUT, "/members").authenticated();
-							   requests.requestMatchers(HttpMethod.DELETE, "/members").authenticated();
+							   requests.requestMatchers(HttpMethod.GET, "/uploads/**", "/boards/**", "/comments/**").permitAll();
+							   requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/boards", "/comments").authenticated();
 						   })
 						   /*
 						    * sessionManagement : 세션을 어떻게 관리할 것인지를 지정할 수 있음
@@ -65,6 +74,21 @@ public class SecurityConfigure {
 						   .build();
 		
 	}
+	
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+		
+	}
+	
+	
 	
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception{
